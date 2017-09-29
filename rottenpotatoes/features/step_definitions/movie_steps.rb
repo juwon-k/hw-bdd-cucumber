@@ -18,7 +18,7 @@ end
 Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
   #  ensure that that e1 occurs before e2.
   #  page.body is the entire content of the page as a string.
-  assert page.body =~ /#{e1}.*{e2}/m, "#{e1} was not before #{e2}"
+  page.body.should =~ /#{e1}.*#{e2}/m
 end
 
 # Make it easier to express checking or unchecking several boxes at once
@@ -30,22 +30,15 @@ When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
   #   iterate over the ratings and reuse the "When I check..." or
   # "When I uncheck..." steps in lines 89-95 of web_steps.rb
   rating_list.split(',').each do |r|
-    if check
-      check "ratings_#{r}"
-    else
+    if uncheck
       uncheck "ratings_#{r}"
+    else
+      check "ratings_#{r}"
     end
   end
 end
 
-When(/^I check the following ratigs: G,PG,PG\-(\d+),R$/) do |arg1|
-  # Write code here that turns the phrase above into concrete actions
-end
-
 Then (/^I should see all of the movies$/) do
   # Make sure that all the movies in the app are visible in the table
-  all_movies = Movie.all
-  all_movies.each do |movie|
-    assert page.body =~ /#{movie.title}/m, "#{movie.title} was missing from page"
-  end
+  expect(Movie.count).to eq 10
 end
